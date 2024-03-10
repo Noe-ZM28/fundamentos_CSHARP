@@ -9,9 +9,9 @@ namespace fundamentos_CSHARP.Models
 {
     public class Conection
     {
-        public static MySqlConnection ConectDB()
+        public static MySqlConnection conectDB()
         {
-            string connectionString = "datasource=localhost;" + 
+            string connectionString = "datasource=localhost;" +
                                        "port=3306;" +
                                        "username=Admin;" +
                                        "password=P4S3S4_ADMIN;" +

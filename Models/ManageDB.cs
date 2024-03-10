@@ -3,23 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using System.Data;
 using MySql.Data.MySqlClient;
 
 namespace fundamentos_CSHARP.Models
 {
     internal class ManageDB
     {
-        private MySqlConnection connection = Conection.ConectDB();
+        MySqlConnection connection = Conection.conectDB();
+
         public void View()
         {
             try
             {
                 connection.Open();
+                string query = "SELECT * FROM animales WHERE id";
 
-                MySqlCommand command = new MySqlCommand();
-                command.Connection = connection;
-                command.CommandText = "SELECT * FROM animales WHERE id > @number;";
-                command.Parameters.AddWithValue("@number", 0);
+                MySqlCommand command = new MySqlCommand(query, connection);
+                /*command.Connection = connection;
+                command.CommandText = query;*/
 
                 using (MySqlDataReader reader = command.ExecuteReader())
                 {
@@ -47,34 +50,26 @@ namespace fundamentos_CSHARP.Models
             {
                 Console.WriteLine("Error: " + ex.Message);
             }
-            finally
-            {
-                connection.Close();
-            }
         }
 
-
-    public void Add(byte Familia, string Sonido, byte Tamaño, string Nombre, byte Velocidad)
+        /*public void View(DataGridView Table)
         {
             try
             {
                 connection.Open();
+                string query = "SELECT * FROM animales";
 
-                MySqlCommand command = new MySqlCommand();
-                command.Connection = connection;
-                command.CommandText = "INSERT INTO animales (familia, sonido, tamaño, nombre, velocidad) " + 
-                                                   "VALUES (@familia, @sonido, @tamaño, @nombre, @velocidad);";
+                //command.Connection = connection;
+                //command.CommandText = query;
 
-                command.Parameters.AddWithValue("@familia", Familia);
-                command.Parameters.AddWithValue("@sonido", Sonido);
-                command.Parameters.AddWithValue("@tamaño", Tamaño);
-                command.Parameters.AddWithValue("@nombre", Nombre);
-                command.Parameters.AddWithValue("@velocidad", Velocidad);
+                Table.DataSource = null;
 
-                command.ExecuteNonQuery();
+                MySqlDataAdapter adapter = new MySqlDataAdapter(query, connection);
 
-                Console.WriteLine("Registro agregado");
-                Console.WriteLine();
+                DataTable dt = new DataTable();
+                adapter.Fill(dt)
+                Table.DataSource = dt;
+
             }
             catch (Exception ex)
             {
@@ -84,63 +79,94 @@ namespace fundamentos_CSHARP.Models
             {
                 connection.Close();
             }
+        }*/
+
+        public void Add(byte Familia, string Sonido, byte Tamaño, string Nombre, byte Velocidad)
+        {
+            try
+            {
+                connection.Open();
+                string query = "INSERT INTO animales (familia, sonido, tamaño, nombre, velocidad) " +
+                                                   "VALUES (@familia, @sonido, @tamaño, @nombre, @velocidad);";
+
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    /*command.Connection = connection;
+                    command.CommandText = query;*/
+
+                    command.Parameters.AddWithValue("@familia", Familia);
+                    command.Parameters.AddWithValue("@sonido", Sonido);
+                    command.Parameters.AddWithValue("@tamaño", Tamaño);
+                    command.Parameters.AddWithValue("@nombre", Nombre);
+                    command.Parameters.AddWithValue("@velocidad", Velocidad);
+
+                    command.ExecuteNonQuery();
+
+                    Console.WriteLine("Registro agregado");
+                    Console.WriteLine();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
         }
+
         public void Edit(byte Id, byte Familia, string Sonido, byte Tamaño, string Nombre, byte Velocidad)
         {
             try
             {
                 connection.Open();
+                string query = "UPDATE animales Set familia = @familia, sonido = @sonido, tamaño = @tamaño, nombre = @nombre, velocidad = @velocidad " +
+                        "WHERE id = @ID;";
 
-                MySqlCommand command = new MySqlCommand();
-                command.Connection = connection;
-                command.CommandText = "UPDATE animales Set familia = @familia, sonido = @sonido, tamaño = @tamaño, nombre = @nombre, velocidad = @velocidad "+
-                                      "WHERE id = @ID;";
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    /*command.Connection = connection;
+                    command.CommandText = query;*/
 
-                command.Parameters.AddWithValue("@familia", Familia);
-                command.Parameters.AddWithValue("@sonido", Sonido);
-                command.Parameters.AddWithValue("@tamaño", Tamaño);
-                command.Parameters.AddWithValue("@nombre", Nombre);
-                command.Parameters.AddWithValue("@velocidad", Velocidad);
-                command.Parameters.AddWithValue("@ID", Id);
+                    command.Parameters.AddWithValue("@familia", Familia);
+                    command.Parameters.AddWithValue("@sonido", Sonido);
+                    command.Parameters.AddWithValue("@tamaño", Tamaño);
+                    command.Parameters.AddWithValue("@nombre", Nombre);
+                    command.Parameters.AddWithValue("@velocidad", Velocidad);
+                    command.Parameters.AddWithValue("@ID", Id);
 
-                command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
 
-                Console.WriteLine("Registro modificado");
-                Console.WriteLine();
+                    Console.WriteLine("Registro modificado");
+                    Console.WriteLine();
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
             }
-            finally
-            {
-                connection.Close();
-            }
         }
+        
         public void Delete(byte Id)
         {
             try
             {
                 connection.Open();
+                string query = "DELETE FROM animales WHERE id = @ID;";
 
-                MySqlCommand command = new MySqlCommand();
-                command.Connection = connection;
-                command.CommandText = "DELETE FROM animales WHERE id = @ID;";
+                using(MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    /*command.Connection = connection;
+                    command.CommandText = query;*/
 
-                command.Parameters.AddWithValue("@ID", Id);
+                    command.Parameters.AddWithValue("@ID", Id);
 
-                command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
 
-                Console.WriteLine("Registro Eliminado");
-                Console.WriteLine();
+                    Console.WriteLine("Registro Eliminado");
+                    Console.WriteLine();
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
-            }
-            finally
-            {
-                connection.Close();
             }
         }
     }
